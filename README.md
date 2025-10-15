@@ -1,7 +1,7 @@
 
 # Oracle Database (Step By Step):
 
-Here you can find solution of Week-9: Q.no: 08
+Here you can find solution of Week-10: Q.no: 08
 
 
 
@@ -24,16 +24,17 @@ Connected.....
 ##### *This command will help you create new user which contains fresh database*
 
 ```bash
-  CREATE USER {insurance_user} IDENTIFIED BY {password};
-
-  GRANT CONNECT, RESOURCE TO {insurance_user};
-  
-  CONNECT {insurance_user}
+  CREATE USER {banking_user} IDENTIFIED BY {password};
+```
+```bash
+  GRANT CONNECT, RESOURCE TO {banking_user};
+```
+```bash
+  CONNECT {banking_user}
   Enter password: {password}
 ```
 
 ##### *You can also use the system database and create tables there but it will contains some predefined tables, constraints etc*
-
 
 
 ##  Creating TABLES:
@@ -41,18 +42,25 @@ Connected.....
 ##### *This command will help you create new tables*
 
 ```bash
-CREATE TABLE PERSON(driver_id VARCHAR2(20) PRIMARY KEY, name VARCHAR2(20), address VARCHAR2(20));
-
-CREATE TABLE CAR(reg_no VARCHAR2(20) PRIMARY KEY, model VARCHAR2(20), year NUMBER(12,0));
-
-CREATE TABLE ACCIDENT(report_number NUMBER(12,0) PRIMARY KEY, accd_date DATE, location VARCHAR(20));
-
-CREATE TABLE OWNS(driver_id VARCHAR(20),reg_no VARCHAR(20));
-
-CREATE TABLE PARTICIPATED(driver_id VARCHAR(20), reg_no VARCHAR2(20), report_number NUMBER(12,0), damage_amt NUMBER(12,0));
+CREATE TABLE BRANCH(branch_name VARCHAR2(20) PRIMARY KEY, branch_city VARCHAR2(20), assets REAL);
+```
+```bash
+CREATE TABLE ACCOUNT(accno NUMBER(12,0) PRIMARY KEY, branch_name VARCHAR2(20), balance REAL);
+```
+```bash
+CREATE TABLE DEPOSITOR(customer_name VARCHAR2(20), accno NUMBER(12,0));
+```
+```bash
+CREATE TABLE CUSTOMER(customer_name VARCHAR2(20),customer_street VARCHAR2(20), customer_city VARCHAR2(20));
+```
+```bash
+CREATE TABLE LOAN(loan_number NUMBER(12,0) PRIMARY KEY, branch_name VARCHAR2(20), amount REAL);
+```
+```bash
+CREATE TABLE BORROWER(customer_name VARCHAR2(20),loan_number NUMBER(12,0));
 ```
 
-##### *You can also define foreign keys/primarys here, But I will add some of Primary keys & foreign keys using 'ALTER' command.*
+##### *You can also define foreign keys(constraints)/primarys here, But I will add some of Primary keys & foreign keys using 'ALTER' command.*
 
 
 ##  Adding FOREIGN KEYS in remaining Tables:
@@ -60,29 +68,51 @@ CREATE TABLE PARTICIPATED(driver_id VARCHAR(20), reg_no VARCHAR2(20), report_num
 ##### *This commands will help you alter tables constraints like primary keys & foreign keys.*
 
 ```bash
-ALTER TABLE OWNS ADD CONSTRAINT fk_id1 FOREIGN KEY (driver_id) REFERENCES PERSON (driver_id);
-
-ALTER TABLE OWNS ADD CONSTRAINT fk_id2 FOREIGN KEY (reg_no) REFERENCES CAR (reg_no);
-
-ALTER TABLE PARTICIPATED ADD CONSTRAINT fk_dri_id FOREIGN KEY (driver_id) REFERENCES PERSON (driver_id);
-
-ALTER TABLE PARTICIPATED ADD CONSTRAINT fk_reg_no FOREIGN KEY (reg_no) REFERENCES CAR (regno);
-
-ALTER TABLE PARTICIPATED ADD CONSTRAINT fk_rep_no FOREIGN KEY (report_number) REFERENCES ACCIDENT (report_number);
+ALTER TABLE ACCOUNT ADD CONSTRAINT fk_branch_name1 FOREIGN KEY (branch_name) REFERENCES BRANCH (branch_name);
+```
+```bash
+ALTER TABLE DEPOSITOR ADD CONSTRAINT fk_accno FOREIGN KEY (accno) REFERENCES ACCOUNT (accno);
+```
+```bash
+ALTER TABLE DEPOSITOR  ADD CONSTRAINT fk_customer_name FOREIGN KEY(customer_name) REFERENCES CUSTOMER (customer_name);
+```
+```bash
+ALTER TABLE LOAN ADD CONSTRAINT fk_branch_name2 FOREIGN KEY (branch_name) REFERENCES BRANCH (branch_name);
+```
+```bash
+ALTER TABLE BORROWER ADD CONSTRAINT fk_customer_name FOREIGN KEY (customer_name) REFERENCES CUSTOMER (customer_name);
+```
+```bash
+ALTER TABLE BORROWER ADD CONSTRAINT fk_loan_number FOREIGN KEY (loan_number) REFERENCES LOAN (loan_number);
 ```
 
 
-##  Adding PRIMARY KEY with Two Columns:
+##  Adding PRIMARY KEY with Two or More Columns:
 
-##### *This commands will help you add primary keys on the remaining tables with two columns.* 
-#### *"To make each column UNIQUE"*
+##### *This commands will help you add primary keys on the remaining tables with two or more columns.* 
+#### *"To make each row UNIQUE"*
 
 ```bash
-ALTER TABLE OWNS ADD CONSTRAINTS pk_owns PRIMARY KEY(driver_id,reg_no);
+ALTER TABLE DEPOSITOR ADD CONSTRAINT pk_depositor PRIMARY KEY (customer_name, accno);
+```
+```bash
+ALTER TABLE BORROWER ADD CONSTRAINT pk_borrower PRIMARY KEY (customer_name, loan_number);
 
-ALTER TABLE PARTICIPATED ADD CONSTRAINTS pk_parti PRIMARY KEY(driver_id, reg_no, report\number);
 ```
 
+##  Setting Constraints 'ON DELETE':
+
+##### *This commands is important because it will decide what to do if we DELETE record from a table(parent) whose column is a foreign key of another table (important for solving last question).* 
+#### *"SET NULL ---> will set the value null."*
+#### *"CASCADE ---> will delete the value corresponding to foreign key."*
+
+```bash
+ALTER TABLE ACCOUNT 
+ADD CONSTRAINT fk_account_branch 
+FOREIGN KEY (branch_name) 
+REFERENCES BRANCH (branch_name)
+ON DELETE SET NULL;
+```
 
 ##  Inserting Data in Tables:
 
@@ -91,66 +121,32 @@ ALTER TABLE PARTICIPATED ADD CONSTRAINTS pk_parti PRIMARY KEY(driver_id, reg_no,
 #### *"INSERT one by one"* 
 
 ```bash
-INSERT INTO PERSON VALUES ('D10001','Altaf','Aligarh');
+UPCOMING.........
 ```
 
 #### *"INSERT multiple rows at once"* 
 
 ```bash
-INSERT ALL
-
-INTO PERSON VALUES('D10002','Rahul','Mewat')
-
-INTO PERSON VALUES('D10003','Rohan','Aligarh')
-
-INTO PERSON VALUES('D10004','Rakesh','Aligarh')
-
-INTO PERSON VALUES('D10005','Asif','Delhi')
-
-SELECT  * FROM dual;
+UPCOMING.........
 ```
 
 #### *"INSERT data having type DATE: (multiple rows)"* 
 
 ```bash
-INSERT ALL
-
-INTO ACCIDENT VALUES(101, TO_DATE('30-09-2025', 'DD-MM-YYYY'), 'Aligarh')
-
-INTO ACCIDENT VALUES(102, TO_DATE('29-09-2025', 'DD-MM-YYYY'), 'Delhi')
-
-INTO ACCIDENT VALUES(103, TO_DATE('29-09-2025', 'DD-MM-YYYY'), 'Mewat')
-
-INTO ACCIDENT VALUES(104, TO_DATE('28-09-2025', 'DD-MM-YYYY'), 'Delhi')
-
-INTO ACCIDENT VALUES(105, TO\_DATE('27-09-2025', 'DD-MM-YYYY'), 'Kanpur')
-
-SELECT  * FROM dual;
+UPCOMING.........
 ```
 
 ##  UPDATE Data in Tables:
 
 ```bash
-UPDATE PARTICIPATED
-
-SET DAMAGE_AMT = 25000
-
-WHERE REPORT_NUMBER = 102;
-
-COMMIT;
+UPCOMING.........
 
 ```
 
 #### *"Oracle Queries are not case sensitive"* 
 
 ```bash
-update accident
-
-set accd_date = to_date('30-09-2008','DD-MM-YYYY')
-
-where report_number in (101,105,103);
-
-commit;
+UPCOMING.........
 
 ```
 
@@ -160,21 +156,7 @@ commit;
 **Here I have used 'WHERE' clause to solve the 2nd last problems, you can use 'JOIN' statements or any other approach.**
 
 ```bash
-SELECT COUNT(*) AS Total
-
-FROM accident a,
-
-owns o,
-
-participated p
-
-WHERE a.report_number = p.report_number
-
-AND o.driver_id = p.driver_id
-
-AND o.reg_no = p.reg_no
-
-AND EXTRACT(YEAR FROM a.accd_date) = 2008;
+UPCOMING.........
 
 ```
 
