@@ -121,42 +121,87 @@ ON DELETE SET NULL;
 #### *"INSERT one by one"* 
 
 ```bash
-UPCOMING.........
+INSERT INTO BRANCH VALUES('Downtown', 'New York', 9000000);
 ```
+```bash
+INSERT INTO CUSTOMER VALUES('John', 'Main_St', 'New York');
+```
+```bash
+INSERT INTO ACCOUNT VALUES(101, 'Downtown', 7000);
+```
+```bash
+INSERT INTO DEPOSITOR VALUES('John', 101);
+```
+```bash
+INSERT INTO LOAN VALUES(5001, 'Downtown', 10000);
+```
+```bash
+INSERT INTO BORROWER VALUES('John', 5001);
+```
+
 
 #### *"INSERT multiple rows at once"* 
 
 ```bash
-UPCOMING.........
+INSERT ALL
+INTO BRANCH VALUES('Central', 'Boston', 4500000)
+INTO BRANCH VALUES('Midtown', 'Houston', 3800000)
+SELECT * FROM dual;
 ```
 
-#### *"INSERT data having type DATE: (multiple rows)"* 
+##  Find all the customers who have atleast two accounts at the main branch:
 
 ```bash
-UPCOMING.........
-```
-
-##  UPDATE Data in Tables:
-
-```bash
-UPCOMING.........
+SELECT d.customer_name
+FROM DEPOSITOR d
+JOIN ACCOUNT a ON d.accno = a.accno
+WHERE a.branch_name = 'Downtown'
+GROUP BY d.customer_name
+HAVING COUNT(d.accno) >= 2;
 
 ```
 
 #### *"Oracle Queries are not case sensitive"* 
 
 ```bash
-UPCOMING.........
+select d.customer_name
+from depositor d
+join account a on d.accno = a.accno
+where a.branch_name = 'Downtown'
+group by d.customer_name
+having count(d.accno) >= 2;
 
 ```
 
-##  EXTRACTING the desired information from Tables:
-
-#### *"Remember I have used these commands as per my research and knowledge, you can apply different approach to solve the same problem, It is Recommended to try by yourself."*
-**Here I have used 'WHERE' clause to solve the 2nd last problems, you can use 'JOIN' statements or any other approach.**
+##  Find all customers who have an account at all branches located in a specific city (for example: 'New York'):
 
 ```bash
-UPCOMING.........
+SELECT d.customer_name
+FROM DEPOSITOR d
+JOIN ACCOUNT a ON d.accno = a.accno
+JOIN BRANCH b ON a.branch_name = b.branch_name
+WHERE b.branch_city = 'New York'
+GROUP BY d.customer_name
+HAVING COUNT(DISTINCT b.branch_name) = (
+    SELECT COUNT(branch_name)
+    FROM BRANCH
+    WHERE branch_city = 'New York'
+);
+
+```
+
+
+## Demonstrate how you delete all ACCOUNT tuples at every branch located in a specific city (for example: 'New York').
+
+##### *If your ACCOUNT table has foreign key constraints with ON DELETE CASCADE,deleting from BRANCH may also automatically remove related ACCOUNT records. But if your constraint uses ON DELETE SET NULL, accounts won’t be deleted — their branch_name will become NULL instead.*
+
+```bash
+DELETE FROM ACCOUNT
+WHERE branch_name IN (
+    SELECT branch_name
+    FROM BRANCH
+    WHERE branch_city = 'New York'
+);
 
 ```
 
